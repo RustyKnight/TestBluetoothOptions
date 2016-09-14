@@ -103,7 +103,7 @@ class ViewController: UIViewController {
 		}
 		
 		updateOptions()
-	}
+	} 
 	
 	@IBAction func doConfigure(_ sender: AnyObject) {
 		do {
@@ -126,15 +126,20 @@ class ViewController: UIViewController {
 		//		let controller = UIAlertController(title: nil,
 		//		                                   message: nil,
 		//		                                   preferredStyle: UIAlertControllerStyle.actionSheet)
-		let controller = AudioSessionManager.shared.alertController(
-			selected: { (route) in
-				print("selected \(route)")
-				self.player.play()
-			}, errored: { (error) in
-				print("Error: ")
-				print("\(error)")
-		}) {
-			print("Cancelled")
+		do {
+			let controller = try AudioSessionManager.shared.alertController(
+				selected: { (route) in
+					print("selected \(route)")
+					self.player.play()
+				}, errored: { (error) in
+					print("Error: ")
+					print("\(error)")
+			}) {
+				print("Cancelled")
+			}
+			present(controller, animated: true, completion: nil)
+		} catch let error {
+			print(error)
 		}
 		
 		//		for action in actions {
@@ -201,6 +206,5 @@ class ViewController: UIViewController {
 		//
 		//		controller.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 		
-		present(controller, animated: true, completion: nil)
 	}
 }

@@ -144,7 +144,7 @@ class AudioSessionManager: NSObject {
 		do {
 			try session.setActive(false)
 			try applyDefaults(with: [.allowBluetooth, .defaultToSpeaker])
-			availableRoutes = try audioRoutes()
+			try loadAudioRoutes(reset: true)
 			try session.setActive(false)
 			try configure(withOverride: .speaker)
 			try session.setActive(true)
@@ -183,7 +183,7 @@ class AudioSessionManager: NSObject {
 	}
 	
 	func invalidateAndRefresh() throws {
-		availableRoutes = try audioRoutes()
+		try loadAudioRoutes()
 	}
 	
 	func routeChanged(_ notification: Notification) {
@@ -284,25 +284,30 @@ class AudioSessionManager: NSObject {
 			|| port == AVAudioSessionPortBluetoothHFP
 	}
 	
-	fileprivate func audioRoutes() throws -> [AudioRoute] {
-		// Cycle the audio session in order to update the available
-		// inputs/outputs
-		try session.setActive(false)
+	fileprivate func loadAudioRoutes(reset: Bool = false) throws {
 		
-		try applyDefaults(with: [.allowBluetooth, .mixWithOthers, .defaultToSpeaker])
-		
+		if reset {
+			// Cycle the audio session in order to update the available
+			// inputs/outputs
+			try session.setActive(false)
+			
+			try applyDefaults(with: [.allowBluetooth, .mixWithOthers, .defaultToSpeaker])
+			
+		}
 		try session.setActive(true)
 		
-		var routes: [AudioRoute] = []
+		var routes: [String: AudioRoute] = [:]
 		
 		if let inputs = session.availableInputs {
 			for input in inputs {
 				print(">> Input: \(input)")
-				routes.append(AudioRoute(inputRoute: input))
+				if !routes.keys.contains(input.portName) {
+						routes[input.portName] = AudioRoute(inputRoute: input)
+				}
 			}
 		}
 		
-		return routes.sorted(by: { (first, second) -> Bool in
+		availableRoutes = routes.values.sorted(by: { (first, second) -> Bool in
 			first.portName > second.portName
 		})
 	}
@@ -372,13 +377,15 @@ class AudioSessionManager: NSObject {
 		return currentRoute.outputs.first
 	}
 	
-	func audioAlertActions(selected: AudioRouteSelected? = nil, errored: AudioRouteSelectionErrored? = nil) -> [UIAlertAction] {
+	func audioAlertActions(selected: AudioRouteSelected? = nil, errored: AudioRouteSelectionErrored? = nil) throws -> [UIAlertAction] {
 		var actions: [UIAlertAction] = []
 		
 		let input = currentInput
 		let output = currentOutput
 		
 		print("Current set to \(input); \(output)")
+		
+		try loadAudioRoutes()
 		
 		var checked: Bool = false
 		let routes = availableRoutes
@@ -441,11 +448,11 @@ class AudioSessionManager: NSObject {
 		return actions
 	}
 	
-	func alertController(selected: AudioRouteSelected? = nil, errored: AudioRouteSelectionErrored? = nil, cancelled: AudioRouteSelectionCancelled? = nil) -> UIAlertController {
+	func alertController(selected: AudioRouteSelected? = nil, errored: AudioRouteSelectionErrored? = nil, cancelled: AudioRouteSelectionCancelled? = nil) throws -> UIAlertController {
 		let controller = UIAlertController(title: nil,
 		                                   message: nil,
 		                                   preferredStyle: UIAlertControllerStyle.actionSheet)
-		var actions = AudioSessionManager.shared.audioAlertActions(selected: selected, errored: errored)
+		var actions = try AudioSessionManager.shared.audioAlertActions(selected: selected, errored: errored)
 		actions.append(UIAlertAction(title: "Cancel", style: .cancel, handler: {(action) in
 			cancelled?()
 		}))
