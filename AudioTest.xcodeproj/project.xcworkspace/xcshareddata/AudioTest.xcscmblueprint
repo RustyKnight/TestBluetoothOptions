@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "090DBE6A3B225838F0401C30B6C14EC7B86A36DE",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "090DBE6A3B225838F0401C30B6C14EC7B86A36DE" : 9223372036854775807,
+    "8BDC65013E63AFB578EBC5E59F5D1F223E3BEB1E" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "E5ECA67D-49FC-4282-9320-B70E6E0E84CD",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "090DBE6A3B225838F0401C30B6C14EC7B86A36DE" : "TestBluetoothOptions\/",
+    "8BDC65013E63AFB578EBC5E59F5D1F223E3BEB1E" : ".."
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "AudioTest",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "AudioTest.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/RustyKnight\/TestBluetoothOptions",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "090DBE6A3B225838F0401C30B6C14EC7B86A36DE"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/bitbucket.org\/RustyKnight\/xcode.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8BDC65013E63AFB578EBC5E59F5D1F223E3BEB1E"
+    }
+  ]
+}

@@ -99,7 +99,7 @@
 				TargetAttributes = {
 					12C14C2D1D87C4F000FC619B = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = 337Z8P6WA4;
+						DevelopmentTeam = YWXH886EY3;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -265,7 +265,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 337Z8P6WA4;
+				DEVELOPMENT_TEAM = YWXH886EY3;
 				INFOPLIST_FILE = AudioTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.beamcommunications.AudioTest;
@@ -278,7 +278,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 337Z8P6WA4;
+				DEVELOPMENT_TEAM = YWXH886EY3;
 				INFOPLIST_FILE = AudioTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.beamcommunications.AudioTest;
@@ -306,6 +306,7 @@
 				12C14C421D87C4F000FC619B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

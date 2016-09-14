@@ -78,30 +78,18 @@ typealias AudioRouteSelectionErrored = (AudioRouteSelectionErrorable) -> Void
 
 struct AudioRoute: CustomStringConvertible, Hashable {
 
-	var inputRoute: AVAudioSessionPortDescription?
-	var outputRoute: AVAudioSessionPortDescription?
+	var inputRoute: AVAudioSessionPortDescription
 	
-	init(outputRoute: AVAudioSessionPortDescription? = nil, inputRoute: AVAudioSessionPortDescription? = nil) {
+	init(inputRoute: AVAudioSessionPortDescription) {
 		self.inputRoute = inputRoute
-		self.outputRoute = outputRoute
 	}
 	
 	var portName: String {
-		if let outputRoute = outputRoute {
-			return outputRoute.portName
-		} else if let inputRoute = inputRoute {
-			return inputRoute.portName
-		}
-		return "Unknown"
+		return inputRoute.portName
 	}
 	
 	var portType: String {
-		if let outputRoute = outputRoute {
-			return outputRoute.portType
-		} else if let inputRoute = inputRoute {
-			return inputRoute.portType
-		}
-		return "Unknown"
+		return inputRoute.portType
 	}
 	
 	var description: String {
@@ -297,67 +285,26 @@ class AudioSessionManager: NSObject {
 	}
 	
 	fileprivate func audioRoutes() throws -> [AudioRoute] {
-		var routes: [String: AudioRoute] = [:]
-		
-		if let inputs = session.availableInputs {
-			for input in inputs {
-				print(input)
-			}
-		}
-		if let sources = session.inputDataSources {
-			for input in sources {
-				print(input)
-			}
-		}
-		if let sources = session.outputDataSources {
-			for input in sources {
-				print(input)
-			}
-		}
-		
-		routes += try audioRoutes(with: [.allowBluetooth, .defaultToSpeaker])
-		
-		return routes.values.sorted(by: { (first, second) -> Bool in
-			first.portName > second.portName
-		})
-	}
-	
-	fileprivate func audioRoutes(`for` port: AVAudioSessionPortOverride? = nil,
-	                             with options: [AVAudioSessionCategoryOptions] = []) throws -> [String: AudioRoute] {
-		var routes: [String: AudioRoute] = [:]
-		
-		print("For \(port)")
-		
 		// Cycle the audio session in order to update the available
 		// inputs/outputs
 		try session.setActive(false)
 		
-		try applyDefaults(with: options)
-		if let port = port {
-			try configure(withOverride: port)
-		}
+		try applyDefaults(with: [.allowBluetooth, .mixWithOthers, .defaultToSpeaker])
 		
 		try session.setActive(true)
 		
-		let currentRoute = session.currentRoute
-		for output in currentRoute.outputs {
-			print(">> Output: \(output)")
-			routes[output.portName] = AudioRoute(outputRoute: output)
-		}
+		var routes: [AudioRoute] = []
+		
 		if let inputs = session.availableInputs {
 			for input in inputs {
 				print(">> Input: \(input)")
-				var route: AudioRoute!
-				if routes[input.portName] != nil {
-					route = routes[input.portName]!
-					route.inputRoute = input
-				} else {
-					route = AudioRoute(inputRoute: input)
-				}
-				routes[input.portName] = route
+				routes.append(AudioRoute(inputRoute: input))
 			}
 		}
-		return routes
+		
+		return routes.sorted(by: { (first, second) -> Bool in
+			first.portName > second.portName
+		})
 	}
 	
 	var hasBluetooth: Bool {
@@ -378,82 +325,6 @@ class AudioSessionManager: NSObject {
 		return false
 	}
 	
-//	func detectAvailableDevices() throws {
-//		let session = AVAudioSession.sharedInstance()
-//		
-//		// Cycle the audio session in order to update the available
-//		// inputs/outputs
-//		try session.setActive(false)
-//		try session.setActive(true)
-//		
-//		try session.setCategory(AVAudioSessionCategoryPlayAndRecord,
-//		                        with: AVAudioSessionCategoryOptions.allowBluetooth)
-//		
-//		/* input port types */
-//		print("AVAudioSessionPortLineIn = \(AVAudioSessionPortLineIn)")
-//		print("AVAudioSessionPortBuiltInMic = \(AVAudioSessionPortBuiltInMic)")
-//		print("AVAudioSessionPortHeadsetMic = \(AVAudioSessionPortHeadsetMic)")
-//		
-//		/* output port types */
-//		print("AVAudioSessionPortLineOut = \(AVAudioSessionPortLineOut)")
-//		print("AVAudioSessionPortHeadphones = \(AVAudioSessionPortHeadphones)")
-//		print("AVAudioSessionPortBluetoothA2DP = \(AVAudioSessionPortBluetoothA2DP)")
-//		print("AVAudioSessionPortBuiltInReceiver = \(AVAudioSessionPortBuiltInReceiver)")
-//		print("AVAudioSessionPortBuiltInSpeaker = \(AVAudioSessionPortBuiltInSpeaker)")
-//		print("AVAudioSessionPortHDMI = \(AVAudioSessionPortHDMI)")
-//		print("AVAudioSessionPortAirPlay = \(AVAudioSessionPortAirPlay)")
-//		print("AVAudioSessionPortBluetoothLE = \(AVAudioSessionPortBluetoothLE)")
-//		
-//		/* port types that refer to either input or output */
-//		print("AVAudioSessionPortBluetoothHFP = \(AVAudioSessionPortBluetoothHFP)")
-//		print("AVAudioSessionPortUSBAudio = \(AVAudioSessionPortUSBAudio)")
-//		print("AVAudioSessionPortCarAudio = \(AVAudioSessionPortCarAudio)")
-//		
-//		print(">> Outputs")
-//		let currentRoute = session.currentRoute
-//		for output in currentRoute.outputs {
-//			print("Output portType = \(output.portType); portName = \(output.portName)")
-//			print(" ... \(output.selectedDataSource)")
-////			if output.portType == AVAudioSessionPortHeadphones {
-////				print("output is headphones")
-////			} else if output.portType == AVAudioSessionPortBluetoothA2DP
-////				|| output.portType == AVAudioSessionPortBluetoothHFP {
-////				print("output is bluetooth")
-////			}
-//		}
-//		
-//		print("\n>> Inputs")
-//		if let inputs = session.availableInputs {
-//			for input in inputs {
-//				print("Input portType = \(input.portType); portName = \(input.portName)")
-//				print(" ... \(input.selectedDataSource)")
-////				if input.portType == AVAudioSessionPortBluetoothA2DP
-////					|| input.portType == AVAudioSessionPortBluetoothHFP {
-////					print("input is bluetooth")
-////				}
-//			}
-//		}
-//	}
-	
-//	func configureAudioSession() throws {
-//		let session = AVAudioSession.sharedInstance()
-//		
-//		try session.setActive(false)
-//		
-//		// Does the device have any input types (microphone)
-//		guard let _ = session.availableInputs else {
-//			throw AudioSessionManagerError.noInputsAvailable
-//		}
-//		
-//		// PlayAndRecord in order to redirect output audio
-//		let category = AVAudioSessionCategoryPlayAndRecord
-//		try session.setCategory(category, with: AVAudioSessionCategoryOptions.allowBluetooth)
-//		
-//		try session.setActive(true)
-//		
-//		try session.overrideOutputAudioPort(AVAudioSessionPortOverride.speaker)
-//	}
-	
 	func configure(withOverride override: AVAudioSessionPortOverride) throws {
 		
 		try session.setActive(false)
@@ -464,7 +335,7 @@ class AudioSessionManager: NSObject {
 		}
 		
 		// PlayAndRecord in order to redirect output audio
-		try applyDefaults()
+		try applyDefaults(with: [.allowBluetooth])
 
 		try session.setActive(true)
 		
@@ -487,16 +358,7 @@ class AudioSessionManager: NSObject {
 			try applyDefaults()
 		}
 		
-		if let inputRoute = route.inputRoute {
-			print("Set inputRoute to \(inputRoute)")
-			try session.setPreferredInput(route.inputRoute)
-//			try session.setInputDataSource(inputRoute.preferredDataSource)
-		}
-		if let outputRoute = route.outputRoute {
-			print("Set outputRoute to \(outputRoute)")
-//			try session.setPreferredInput(route.inputRoute)
-			try session.setOutputDataSource(outputRoute.preferredDataSource)
-		}
+		try session.setPreferredInput(route.inputRoute)
 		
 		try session.setActive(true)
 	}
