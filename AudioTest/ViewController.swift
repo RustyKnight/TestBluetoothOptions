@@ -34,7 +34,7 @@ class ViewController: UIViewController {
 	@IBOutlet weak var hasHeadsetLabel: UILabel!
 	@IBOutlet weak var hasBluetoothLabel: UILabel!
 	
-	let player = MPMusicPlayerController.applicationMusicPlayer()
+    let player = MPMusicPlayerController.applicationMusicPlayer
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -44,8 +44,18 @@ class ViewController: UIViewController {
 		
 		doMonitor(self)
 		
-		NotificationCenter.default.addObserver(self, selector: #selector(ViewController.nowPlayingItemChanged), name: NSNotification.Name.MPMusicPlayerControllerNowPlayingItemDidChange, object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(ViewController.playBackStateChanged), name: NSNotification.Name.MPMusicPlayerControllerPlaybackStateDidChange, object: nil)
+		NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(ViewController.nowPlayingItemChanged),
+            name: NSNotification.Name.MPMusicPlayerControllerNowPlayingItemDidChange,
+            object: nil
+        )
+		NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(ViewController.playBackStateChanged),
+            name: NSNotification.Name.MPMusicPlayerControllerPlaybackStateDidChange,
+            object: nil
+        )
 		
 		player.beginGeneratingPlaybackNotifications()
 		player.shuffleMode = .off
@@ -76,12 +86,12 @@ class ViewController: UIViewController {
 		hasBluetoothLabel.isHidden = !AudioSessionManager.shared.hasBluetooth
 	}
 	
-	func nowPlayingItemChanged(_ notification: Notification) {
+    @objc func nowPlayingItemChanged(_ notification: Notification) {
 		print("nowPlayingItemChanged")
 		print("Now playing \(player.nowPlayingItem)")
 	}
 	
-	func playBackStateChanged(_ notification: Notification) {
+    @objc func playBackStateChanged(_ notification: Notification) {
 		print("playBackStateChanged")
 		print("Playback state \(player.playbackState)")
 		if player.playbackState == .paused {
